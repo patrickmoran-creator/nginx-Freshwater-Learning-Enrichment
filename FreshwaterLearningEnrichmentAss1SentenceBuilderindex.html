@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Freshwater Learning Enrichment — Analytical Sentence Builder</title>
+
+<style>
+    body {
+        font-family: "Segoe UI", sans-serif;
+        background: #0c1e28;
+        color: #e8f5ff;
+        margin: 0;
+        padding: 0;
+    }
+    header {
+        background: #12394d;
+        text-align: center;
+        padding: 15px;
+        border-bottom: 3px solid #3fa9d6;
+    }
+    header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #9ed4f0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    header h2 {
+        margin: 5px 0 0;
+        font-size: 1.05rem;
+        color: #bee7ff;
+        font-weight: 400;
+    }
+    .container {
+        max-width: 900px;
+        margin: 20px auto;
+        background: #102632;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #306b82;
+    }
+    label {
+        font-weight: bold;
+        margin-top: 12px;
+        display: block;
+    }
+    select, textarea, input[type="range"] {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        margin-top: 5px;
+        background: #163544;
+        color: #d4efff;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+    textarea {
+        min-height: 60px;
+    }
+    .hint {
+        font-size: 0.85rem;
+        color: #a8cbdd;
+        margin-top: 2px;
+    }
+    .pyramid-img {
+        max-width: 100%;
+        margin-top: 10px;
+        border-radius: 8px;
+        border: 1px solid #234357;
+    }
+
+    details {
+        margin-top: 8px;
+        background: #0e2330;
+        padding: 6px 8px;
+        border-radius: 6px;
+        border: 1px solid #234357;
+    }
+    details summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: #9ed4f0;
+    }
+    details p {
+        margin-top: 4px;
+        font-size: 0.9rem;
+    }
+
+    .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .word {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 0.95rem;
+    }
+    .word:hover {
+        transform: scale(1.07);
+    }
+    .resilience {
+        border-color: #f2c14f;
+        color: #f2c14f;
+    }
+    .empathy {
+        border-color: #3fa9d6;
+        color: #3fa9d6;
+    }
+
+    button {
+        background: #3fa9d6;
+        border: none;
+        padding: 10px 18px;
+        margin-top: 15px;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+    }
+    button:hover { background: #5cc7f8; }
+
+    #output {
+        display: none;
+        background: #12303e;
+        padding: 15px;
+        border-left: 4px solid #3fa9d6;
+        border-radius: 6px;
+        margin-top: 20px;
+    }
+
+    #complexityLabel {
+        display: inline-block;
+        margin-top: 4px;
+        font-size: 0.85rem;
+        color: #c5e2f5;
+    }
+    hr {
+        border: 0;
+        border-top: 1px solid #2b4a5c;
+        margin: 24px 0;
+    }
+
+    .breakdown {
+        font-size: 0.9rem;
+        margin-top: 6px;
+    }
+    .breakdown strong {
+        color: #9ed4f0;
+    }
+
+    /* Band comparison panel */
+    #bandPanel {
+        display: none;
+        margin-top: 16px;
+        background: #0e2330;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #234357;
+    }
+    .band-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+        margin-bottom: 8px;
+    }
+    .band-buttons button {
+        width: auto;
+        flex: 1 1 80px;
+        background: #234c63;
+        padding: 8px 10px;
+        font-size: 0.95rem;
+    }
+    .band-buttons button.active {
+        background: #3fa9d6;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Freshwater Learning Enrichment</h1>
+    <h2>Past the Shallows – Texts and Human Experiences – Sentence Builder (to help with 2026 HSC Standard Assessment 1)</h2>
+</header>
+
+<div class="container">
+
+    <p class="hint">
+        Example – Based on your Tasmanian Gothic noun pyramid: <strong>adjective → adjective → base noun → “tell me more” clause/phrase from inside the text → “tell me more” clause/phrase outside the text</strong>.
+    </p>
+
+    <!-- Noun pyramid graphic from your resource -->
+    <img src="noun_pyramid.png"
+         alt="Example blank template for a noun group pyramid with the sentence: The powerful ballet dancer whose grand jeté is captured in the black and white photograph."
+         class="pyramid-img" />
+
+    <p class="hint">
+        Remember: this tool is designed to practise generating ideas and putting the right words in the right order. 
+        Once you have played around in here for a while, pick up your pen, use this process and put your pen to the paper. 
+        See Mr Moran or the SLSOs for further support.
+    </p>
+
+    <!-- Step sequence -->
+    <label>Step 1 — Base noun (macro concept):</label>
+    <select id="baseNoun" onchange="filterWords()">
+        <option value="resilience">Resilience</option>
+        <option value="empathy">Empathy</option>
+    </select>
+
+    <label>Step 2 — Adjective (What type?)</label>
+    <p class="hint">
+        Gold adjectives tend to suit resilience; blue adjectives tend to suit empathy.  
+        Click to choose <strong>one</strong> adjective. Use the accordions to explore different adjective types.
+    </p>
+    <div id="adjectiveContainer"></div>
+
+    <label>Step 3 — Choose a theme for your quote:</label>
+    <select id="quoteTheme" onchange="populateQuoteSelect()">
+        <option value="resilience_environment">Resilience – environmental endurance</option>
+        <option value="resilience_trauma">Resilience – trauma, loss and survival</option>
+        <option value="empathy_relationships">Empathy – relationships, loyalty and care</option>
+        <option value="hope_remembrance">Hope and remembrance – grief, memory and transcendence</option>
+    </select>
+
+    <label>Step 4 — Choose your quote (textual evidence):</label>
+    <select id="quoteSelect" onchange="updateQuoteInfo()">
+        <!-- options populated by JS -->
+    </select>
+
+    <details>
+        <summary>Literary techniques in this quote</summary>
+        <p id="techniquesText">Select a quote to see the key techniques.</p>
+    </details>
+
+    <details>
+        <summary>Ideas about the human condition</summary>
+        <p id="humanText">Select a quote to see how it comments on resilience and/or empathy.</p>
+    </details>
+
+    <label>Step 5 — Tell me more <em>inside the text</em><br>
+        <span class="hint">(What exactly happens in this quote? What do we see, hear or feel?)</span>
+    </label>
+    <textarea id="insideText" placeholder="e.g. when Miles holds himself together on the boat so Harry will not be afraid..."></textarea>
+
+    <label>Optional sentence expansion tools</label>
+    <p class="hint">
+        Use a 5W, a suggested clause and an optional clause starter (preposition + gerund) to extend your inside-the-text idea.
+    </p>
+
+    <label><strong>5W starter (choose one)</strong></label>
+    <select id="wStarter" onchange="updateWSuggestions()">
+      <option value="">None</option>
+      <option value="when">When</option>
+      <option value="where">Where</option>
+      <option value="why">Why</option>
+      <option value="what">What</option>
+      <option value="who">Who</option>
+    </select>
+
+    <label><strong>Suggested clause for this quote / theme</strong></label>
+    <select id="wSuggestion">
+      <option value="">No suggested clause selected</option>
+    </select>
+
+    <label><strong>Clause starter with preposition + gerund (optional)</strong></label>
+    <select id="clauseStarter">
+      <option value="">None</option>
+      <option value="despite longing for safety and connection">despite longing for safety and connection</option>
+      <option value="while enduring the emotional weight of the moment">while enduring the emotional weight of the moment</option>
+      <option value="by remembering earlier moments of fragile care">by remembering earlier moments of fragile care</option>
+      <option value="by protecting the people he loves">by protecting the people he loves</option>
+      <option value="while grieving what has already been lost">while grieving what has already been lost</option>
+      <option value="by searching for warmth and belonging beyond the cold coastline">by searching for warmth and belonging beyond the cold coastline</option>
+      <option value="by repressing his own fear to appear strong for others">by repressing his own fear to appear strong for others</option>
+    </select>
+
+    <button onclick="applyExpansion()">Add to my inside-the-text idea</button>
+
+    <label>Step 6 — Complexity level for your <em>outside the text</em> idea</label>
+    <input type="range" id="complexity" min="1" max="3" value="1" oninput="updateComplexityLabel(); updateMeaningOptions();">
+    <span id="complexityLabel">Level 1 – simple emotional / social meaning</span>
+
+    <label>Step 7 — Select a meaning connection <em>outside the text</em></label>
+    <p class="hint">These connect the quote to individual, collective and universal human experiences.</p>
+    <select id="outsideMeaning">
+        <!-- populated by JS -->
+    </select>
+
+    <button onclick="buildSentence()">Generate my analytical sentence</button>
+
+    <div id="output">
+        <h3>Your noun pyramid sentence:</h3>
+        <p id="sentence"></p>
+
+        <div class="breakdown">
+            <p><strong>Base noun:</strong> <span id="outBaseNoun"></span></p>
+            <p><strong>Adjective (What type?):</strong> <span id="outAdjective"></span></p>
+            <p><strong>Tell me more (inside the text):</strong> <span id="outInside"></span></p>
+            <p><strong>Tell me more (outside the text – human experience):</strong> <span id="outOutside"></span></p>
+        </div>
+
+        <p class="hint">
+            Reflect: Which part of your sentence focuses on <strong>inside the text</strong>?  
+            Which part helps you think <strong>beyond the text</strong> about texts and human experiences?
+        </p>
+    </div>
+
+    <!-- Band comparison panel -->
+    <div id="bandPanel">
+        <h3>Band comparison – the same idea at different levels</h3>
+        <p class="hint">
+            Use these versions to see how vocabulary, clause length and abstract language change from Band 2 to Band 5/6.
+        </p>
+        <div class="band-buttons">
+            <button type="button" id="btnBand2" onclick="setBandLevel(2)">Band 2</button>
+            <button type="button" id="btnBand3" onclick="setBandLevel(3)">Band 3</button>
+            <button type="button" id="btnBand4" onclick="setBandLevel(4)">Band 4</button>
+            <button type="button" id="btnBand6" onclick="setBandLevel(6)">Band 5/6</button>
+        </div>
+        <p id="bandSentence"></p>
+    </div>
+
+    <hr>
+
+    <details>
+      <summary>Model mentor sentences (Band 2–Band 5/6)</summary>
+      <p class="hint">Use these as examples of how to combine adjectives, the base noun, the quote, your inside-the-text idea and your outside-the-text human experience connection.</p>
+
+      <h4>Example 1 – Resilience & Environment (Ch.2 “Miles knew the water…”) </h4>
+      <p><strong>Approx. Band 2:</strong><br>
+      The quote “Miles knew the water. He could feel it. And he knew not to trust it.” is about resilience because Miles understands the sea is dangerous, and it suggests that people sometimes have to be careful to stay safe in hard places.</p>
+
+      <p><strong>Approx. Band 3:</strong><br>
+      In the quote “Miles knew the water. He could feel it. And he knew not to trust it.”, Parrett presents a cautious kind of resilience when Miles respects the sea, suggesting that lived experience teaches people how to protect themselves in risky environments.</p>
+
+      <p><strong>Approx. Band 4:</strong><br>
+      Through constructing cautious resilience, evident when Miles “knew the water” and “knew not to trust it”, Parrett presents a boy who learns to survive by respecting a dangerous environment, and connects this to the way individuals develop emotional toughness in response to harsh physical conditions.</p>
+
+      <p><strong>Approx. Band 5/6:</strong><br>
+      Through constructing cautious resilience, evident when Miles “knew the water” and “knew not to trust it”, Parrett frames resilience as a psychological awareness that grows from lived danger, positioning responders to consider how individual human experiences within hostile landscapes shape a universal instinct to anticipate harm and protect the self.</p>
+
+      <h4>Example 2 – Empathy & Relationships (Ch.25 “They seemed to have an understanding…”) </h4>
+      <p><strong>Approx. Band 2:</strong><br>
+      The quote “They seemed to have an understanding, George and Harry. One that didn’t need words.” is about empathy because George cares about Harry, suggesting that friendship can make people feel less alone.</p>
+
+      <p><strong>Approx. Band 3:</strong><br>
+      In the quote “They seemed to have an understanding, George and Harry. One that didn’t need words.”, Parrett presents quiet empathy when George looks after Harry, suggesting that unspoken support can help people cope with difficult lives.</p>
+
+      <p><strong>Approx. Band 4:</strong><br>
+      Through constructing quiet empathy, evident when “George and Harry” share an “understanding… that didn’t need words”, Parrett presents a bond formed through shared hardship, linking this to the way people care for each other even when they cannot easily express feelings.</p>
+
+      <p><strong>Approx. Band 5/6:</strong><br>
+      Through constructing quiet empathy, evident when “George and Harry” share an “understanding… that didn’t need words”, Parrett explores how unspoken care can sustain individuals at the edges of society, prompting responders to reflect on how collective human experience of marginalisation can deepen sensitivity to another person’s pain.</p>
+
+      <h4>Example 3 – Trauma, Family & Paradox (Ch.24 “‘I never wanted you.’”)</h4>
+      <p><strong>Approx. Band 2:</strong><br>
+      The quote “I never wanted you” is about emotional hurt because the father rejects his child, suggesting that cruel words in a family can make a person feel worthless.</p>
+
+      <p><strong>Approx. Band 3:</strong><br>
+      In the quote “I never wanted you”, Parrett presents painful resilience when the child must keep living with rejection, suggesting that some people grow up carrying deep emotional scars from their parents.</p>
+
+      <p><strong>Approx. Band 4:</strong><br>
+      Through constructing painful resilience, evident when the father states “I never wanted you”, Parrett presents a child who must keep living with emotional rejection, and connects this to the way trauma in families can damage a person’s sense of worth.</p>
+
+      <p><strong>Approx. Band 5/6:</strong><br>
+      Through constructing painful resilience, evident when the father declares “I never wanted you”, Parrett exposes a paradox in human experience where love and cruelty coexist, positioning responders to consider how patriarchal power, economic stress and emotional neglect create anomalies and inconsistencies in the care that children deserve.</p>
+
+      <h4>Example 4 – Hope, Grief & Transcendence (Ch.38 “I am free – flying like a bird.”)</h4>
+      <p><strong>Approx. Band 2:</strong><br>
+      The quote “I am free – flying like a bird. I am free.” is about hope because Harry imagines being free, suggesting that people want peace after suffering.</p>
+
+      <p><strong>Approx. Band 3:</strong><br>
+      In the quote “I am free – flying like a bird. I am free.”, Parrett presents fragile hope when Harry pictures himself escaping his life, suggesting that people sometimes dream of freedom when reality is too painful.</p>
+
+      <p><strong>Approx. Band 4:</strong><br>
+      Through constructing fragile hope, evident in Harry’s claim “I am free – flying like a bird”, Parrett presents the idea that freedom can exist beyond suffering, linking this to a simple wish for peace after trauma.</p>
+
+      <p><strong>Approx. Band 5/6:</strong><br>
+      Through constructing fragile hope, evident in Harry’s “I am free – flying like a bird”, Parrett illuminates a spiritual and emotional desire to escape physical and psychological pain, inviting responders to connect this to universal human experiences of grief, redemption and the longing to move beyond damage into a more compassionate space.</p>
+    </details>
+</div>
+
+<script>
+// ----------------------------------------------------
+// ADJECTIVES: tiered (accordion) by semantic category
+// ----------------------------------------------------
+const resilienceWords = [
+  { word: "quiet",      category: "Emotional / psychological" },
+  { word: "enduring",   category: "Emotional / psychological" },
+  { word: "weathered",  category: "Physical / environmental" },
+  { word: "stubborn",   category: "Emotional / psychological" },
+  { word: "gritty",     category: "Social / moral" },
+  { word: "stoic",      category: "Emotional / psychological" },
+  { word: "adaptive",   category: "Psychological / cognitive" },
+  { word: "scarred",    category: "Emotional / psychological" },
+  { word: "persistent", category: "Social / moral" },
+  { word: "unbroken",   category: "Emotional / psychological" }
+];
+
+const empathyWords = [
+  { word: "intuitive",    category: "Emotional / psychological" },
+  { word: "compassionate",category: "Emotional / psychological" },
+  { word: "tender",       category: "Emotional / psychological" },
+  { word: "gentle",       category: "Emotional / psychological" },
+  { word: "receptive",    category: "Psychological / cognitive" },
+  { word: "attuned",      category: "Psychological / cognitive" },
+  { word: "understanding",category: "Social / moral" },
+  { word: "responsive",   category: "Social / moral" },
+  { word: "protective",   category: "Social / moral" },
+  { word: "sensitive",    category: "Emotional / psychological" }
+];
+
+let selectedAdjective = "";
+let currentQuote = null;
+let currentThemeKey = "resilience_environment";
+let currentBandSentences = {};
+
+// ----------------------------------------------------
+// QUOTE DATA: grouped by conceptual themes
+// ----------------------------------------------------
+const quoteData = {
+  resilience_environment: [
+    {
+      id: "ch1_old_place",
+      label: "Ch.1 – “This place was old. Harry knew it. As old as the world.”",
+      text: "\"This place was old. Harry knew it. As old as the world.\"",
+      human: "Hints at the timeless struggle of survival in harsh environments — resilience as endurance.",
+      tech: "Truncated sentences; imagery of age; personification of place that evokes an ancient link between humans and nature."
+    },
+    {
+      id: "ch2_miles_water",
+      label: "Ch.2 – “Miles knew the water. He could feel it. And he knew not to trust it.”",
+      text: "\"Miles knew the water. He could feel it. And he knew not to trust it.\"",
+      human: "Suggests resilience through awareness and a wary empathy with the natural world’s dangers.",
+      tech: "Personification; sensory language; recurring water motif symbolising life's unpredictability."
+    },
+    {
+      id: "ch5_dive_for_real",
+      label: "Ch.5 – “In a few years he would have to dive down there for real.”",
+      text: "\"In a few years he would have to dive down there for real.\"",
+      human: "Suggests the inevitability of confronting fear and developing courage within hardship.",
+      tech: "Foreshadowing; visual imagery; evocative verbs; motif of humans pushed against nature."
+    },
+    {
+      id: "ch7_ocean_at_peace",
+      label: "Ch.7 – “The paddle was easy. The waves were easy. The ocean was at peace.”",
+      text: "\"The paddle was easy. The waves were easy. The ocean was at peace.\"",
+      human: "Hints at calm after struggle, where resilience includes finding moments of ease and reconciliation with nature.",
+      tech: "Repetition; rhythm; symbolism where the ocean mirrors emotional healing."
+    },
+    {
+      id: "ch11_scar_survived",
+      label: "Ch.11 – “It still had a scar… and it was amazing that it had survived at all.”",
+      text: "\"It still had a scar… and it was amazing that it had survived at all.\"",
+      human: "The scar symbolises endurance and the idea that survival often includes visible and invisible marks.",
+      tech: "Metaphor; imagery of survival; tone of quiet awe."
+    },
+    {
+      id: "ch42_miles_water_in_him",
+      label: "Ch.42 – “Miles could feel it in him. The water.”",
+      text: "\"Miles could feel it in him. The water.\"",
+      human: "Suggests resilience as continuation, where memory and the natural world stay within a person and shape healing.",
+      tech: "Water motif; sensory imagery; a cyclical sense of renewal."
+    }
+  ],
+  resilience_trauma: [
+    {
+      id: "ch24_never_wanted_you",
+      label: "Ch.24 – “‘I never wanted you.’”",
+      text: "\"I never wanted you.\"",
+      human: "Tests resilience by exposing deep emotional wounds that influence identity and emotional growth.",
+      tech: "Dialogue; visceral imagery; mood and atmosphere; a metaphor of cruelty and rejection."
+    },
+    {
+      id: "ch28_none_of_it_good",
+      label: "Ch.28 – “A house. A farm. A family. A home… And none of it was any good.”",
+      text: "\"A house. A farm. A family. A home… And none of it was any good.\"",
+      human: "Suggests resilience eroded by disillusionment and the emptiness that follows lost belonging.",
+      tech: "Listing; fragmentation; structure that reflects emotional desolation."
+    },
+    {
+      id: "ch29_maybe_ok",
+      label: "Ch.29 – “…maybe it would be OK. Maybe Dad would be OK.”",
+      text: "\"…maybe it would be OK. Maybe Dad would be OK.\"",
+      human: "Represents fragile hope, where resilience sits within uncertain imagined possibilities.",
+      tech: "Dialogue; repetition; subdued tone reflecting cycles of trauma."
+    },
+    {
+      id: "ch36_harry_not_there",
+      label: "Ch.36 – “Harry wasn’t there. Harry wasn’t anywhere.”",
+      text: "\"Harry wasn’t there. Harry wasn’t anywhere.\"",
+      human: "Confronts readers with grief, where resilience becomes the difficult act of living through devastating loss.",
+      tech: "Repetition, parallel syntax and ellipsis that evoke shock and emptiness."
+    },
+    {
+      id: "ch14_tooth_hidden",
+      label: "Ch.14 – “But he didn’t show him the tooth.”",
+      text: "\"But he didn’t show him the tooth.\"",
+      human: "Suggests emotional repression and resilience that relies on silence and carrying burdens alone.",
+      tech: "Narrative voice; foreshadowing; imagery linking hidden truth with pain."
+    }
+  ],
+  empathy_relationships: [
+    {
+      id: "ch10_dog_wanted_him",
+      label: "Ch.10 – “Because there was nowhere else to go and nothing to do and because the dog wanted him to stay.”",
+      text: "\"Because there was nowhere else to go and nothing to do and because the dog wanted him to stay.\"",
+      human: "Demonstrates empathy through loyalty and shared isolation between a boy and his dog.",
+      tech: "Parallel syntax; motif of animals as mirrors for human feeling; understated tone creating emotional resonance."
+    },
+    {
+      id: "ch17_granddad_died",
+      label: "Ch.17 – “And if Granddad hadn’t died… it would have been good like this was.”",
+      text: "\"And if Granddad hadn’t died… it would have been good like this was.\"",
+      human: "Frames memory as a form of empathy, where connection across generations offers emotional survival.",
+      tech: "Flashback; tone of longing; sensory imagery (gustatory); recurring water motif."
+    },
+    {
+      id: "ch19_real_friends",
+      label: "Ch.19 – “He knew they were real friends now.”",
+      text: "\"He knew they were real friends now.\"",
+      human: "Highlights empathy that grows from shared pain and recognising the humanity in others.",
+      tech: "Symbolism; sensory imagery; simile emphasising warmth and belonging."
+    },
+    {
+      id: "ch25_understanding_without_words",
+      label: "Ch.25 – “They seemed to have an understanding, George and Harry. One that didn’t need words.”",
+      text: "\"They seemed to have an understanding, George and Harry. One that didn’t need words.\"",
+      human: "Affirms empathy as quiet, unspoken understanding and compassion amid despair.",
+      tech: "Silence as technique; understatement; mood; sensory language."
+    },
+    {
+      id: "ch35_harry_way_about_him",
+      label: "Ch.35 – “Harry had a way about him. A way that made you promise to take care of him.”",
+      text: "\"Harry had a way about him. A way that made you promise to take care of him.\"",
+      human: "Suggests empathy as a natural moral impulse to protect vulnerable people.",
+      tech: "Characterisation; tactile imagery; motif of care and survival."
+    },
+    {
+      id: "ch40_he_was_perfect",
+      label: "Ch.40 – “…he was perfect. Nothing had touched him.”",
+      text: "\"…he was perfect. Nothing had touched him.\"",
+      human: "Expresses grief and fragile peace, where empathy is rooted in love and the wish to preserve someone from harm.",
+      tech: "Repetition; tactile imagery; flashback shaping memory as healing."
+    }
+  ],
+  hope_remembrance: [
+    {
+      id: "ch13_stuff_never_used",
+      label: "Ch.13 – “All that stuff was perfect and clean and never used.”",
+      text: "\"All that stuff was perfect and clean and never used.\"",
+      human: "Reflects loss and emotional resilience — human grief masked by memory.",
+      tech: "Symbolism of white; accumulation; truncated sentences mirroring emptiness."
+    },
+    {
+      id: "ch38_i_am_free",
+      label: "Ch.38 – “I am free – flying like a bird. I am free.”",
+      text: "\"I am free – flying like a bird. I am free.\"",
+      human: "Suggests transcendence — empathy for the human yearning for peace.",
+      tech: "Simile; anaphora; metamorphic imagery of freedom beyond suffering."
+    },
+    {
+      id: "ch43_out_past_shallows",
+      label: "Ch.43 – “Out past the shallows… to somewhere new. To somewhere warm.”",
+      text: "\"Out past the shallows… to somewhere new. To somewhere warm.\"",
+      human: "Closure through transformation — empathy for the universal search for safety and connection.",
+      tech: "Structure (cyclical opening/ending); symbolism of water; mood of release and hope."
+    }
+  ]
+};
+
+// ----------------------------------------------------
+// Meaning options (outside the text) by theme + level
+// ----------------------------------------------------
+const meaningOptions = {
+  resilience_environment: [
+    {
+      level: 1,
+      text: "highlighting emotional resilience that emerges when individuals adapt to harsh physical environments and unpredictable seas"
+    },
+    {
+      level: 2,
+      text: "suggesting a psychological and almost spiritual connection between the Tasmanian landscape and the individual human experience of endurance"
+    },
+    {
+      level: 3,
+      text: "exploring a paradox where a hostile, isolating environment also becomes a source of resilience and a universal sense of belonging within the natural world"
+    }
+  ],
+  resilience_trauma: [
+    {
+      level: 1,
+      text: "focusing on the emotional impact of trauma within families and the need to keep going despite deep hurt"
+    },
+    {
+      level: 2,
+      text: "probing psychological internal conflict created when love, fear and loyalty collide in damaging home environments"
+    },
+    {
+      level: 3,
+      text: "exposing anomalies and inconsistencies in cultural and patriarchal power structures, where restrictive ideologies and economic limits damage children yet still demand resilience from them"
+    }
+  ],
+  empathy_relationships: [
+    {
+      level: 1,
+      text: "emphasising small acts of care and loyalty that shape social bonds in an isolated community"
+    },
+    {
+      level:2,
+      text: "suggesting that empathy grows from shared marginalisation, shaping both individual human experience and a fragile sense of collective human experience"
+    },
+    {
+      level:3,
+      text: "questioning how love, grief and quiet solidarity resist economic and political pressures that restrict power, belonging and voice at the margins"
+    }
+  ],
+  hope_remembrance: [
+    {
+      level:1,
+      text: "pointing to the emotional need to imagine a safer, warmer future after loss and grief"
+    },
+    {
+      level:2,
+      text: "framing grief and remembrance as part of a universal search for redemption, meaning and spiritual peace"
+    },
+    {
+      level:3,
+      text: "revealing the paradox that trauma, grief and memory can both wound and redeem, reshaping cultural stories about who deserves safety, love and a future beyond suffering"
+    }
+  ]
+};
+
+// ----------------------------------------------------
+// 5W suggested clauses (already include the W word)
+// ----------------------------------------------------
+const wSuggestions = {
+  resilience_environment: {
+    when: [
+      "when the boys work in the cold Tasmanian waters, relying on their knowledge of the sea"
+    ],
+    where: [
+      "where the ancient coastline and restless ocean surround the fishing boat"
+    ],
+    why: [
+      "why survival on the boat depends on respecting the ocean’s unpredictable force"
+    ],
+    what: [
+      "what happens as the Tasmanian landscape and ocean test their physical and emotional limits"
+    ],
+    who: [
+      "who learns to read the moods of the water in order to stay alive"
+    ]
+  },
+  resilience_trauma: {
+    when: [
+      "when cruel words and long silences from adults cut into the boys’ sense of worth"
+    ],
+    where: [
+      "where the family home becomes a space of fear instead of safety"
+    ],
+    why: [
+      "why children in violent households must develop resilience just to keep functioning"
+    ],
+    what: [
+      "what happens as emotional wounds shape their identity and choices"
+    ],
+    who: [
+      "who carries the weight of rejection while still trying to belong"
+    ]
+  },
+  empathy_relationships: {
+    when: [
+      "when George quietly looks out for Harry without needing spoken thanks"
+    ],
+    where: [
+      "where friendships form on the edges of town and out on the water"
+    ],
+    why: [
+      "why shared hardship deepens empathy between people who have very little"
+    ],
+    what: [
+      "what happens as small acts of care become vital for emotional survival"
+    ],
+    who: [
+      "who recognises another person’s pain and chooses to protect them"
+    ]
+  },
+  hope_remembrance: {
+    when: [
+      "when characters imagine somewhere warm and safe beyond their present pain"
+    ],
+    where: [
+      "where memory blurs the line between the cold coast and an imagined sanctuary"
+    ],
+    why: [
+      "why grief and remembrance can lead to a longing for redemption"
+    ],
+    what: [
+      "what happens as loss forces them to rethink what freedom and peace might mean"
+    ],
+    who: [
+      "who holds onto the hope of a different, more compassionate future"
+    ]
+  }
+};
+
+// ----------------------------------------------------
+// UI BUILDERS
+// ----------------------------------------------------
+function filterWords() {
+    const noun = document.getElementById("baseNoun").value;
+    const container = document.getElementById("adjectiveContainer");
+    container.innerHTML = "";
+
+    const list = noun === "resilience" ? resilienceWords : empathyWords;
+    const typeClass = noun === "resilience" ? "resilience" : "empathy";
+
+    // collect categories
+    const categoryMap = {};
+    list.forEach(item => {
+        if (!categoryMap[item.category]) categoryMap[item.category] = [];
+        categoryMap[item.category].push(item.word);
+    });
+
+    selectedAdjective = "";
+
+    Object.keys(categoryMap).forEach(category => {
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.textContent = category;
+        details.appendChild(summary);
+
+        const bank = document.createElement("div");
+        bank.className = "word-bank";
+
+        categoryMap[category].forEach(word => {
+            const div = document.createElement("div");
+            div.className = `word ${typeClass}`;
+            div.innerText = word;
+            div.onclick = () => { selectedAdjective = word; highlight(div); };
+            bank.appendChild(div);
+        });
+
+        details.appendChild(bank);
+        container.appendChild(details);
+    });
+}
+
+function highlight(element) {
+    document.querySelectorAll('.word').forEach(w => w.style.background = "transparent");
+    element.style.background = "#244b57";
+}
+
+// apply 5W suggestion + clause starter into insideText
+function applyExpansion() {
+    const wSuggestion = document.getElementById("wSuggestion").value;
+    const clauseStarter = document.getElementById("clauseStarter").value;
+    const box = document.getElementById("insideText");
+
+    const additions = [];
+
+    if (wSuggestion) {
+        additions.push(wSuggestion);
+    }
+    if (clauseStarter) {
+        additions.push(clauseStarter);
+    }
+
+    if (additions.length === 0) {
+        alert("Please choose at least a 5W suggested clause or a clause starter before adding.");
+        return;
+    }
+
+    const addText = additions.join(", ");
+    box.value += (box.value.trim() ? " " : "") + addText + " ";
+}
+
+// populate quote list from selected theme
+function populateQuoteSelect() {
+    currentThemeKey = document.getElementById("quoteTheme").value;
+    const select = document.getElementById("quoteSelect");
+    const list = quoteData[currentThemeKey] || [];
+
+    select.innerHTML = "";
+    list.forEach(q => {
+        const opt = document.createElement("option");
+        opt.value = q.id;
+        opt.textContent = q.label;
+        select.appendChild(opt);
+    });
+
+    if (list.length > 0) {
+        currentQuote = list[0];
+        document.getElementById("techniquesText").textContent = currentQuote.tech;
+        document.getElementById("humanText").textContent = currentQuote.human;
+    } else {
+        currentQuote = null;
+        document.getElementById("techniquesText").textContent = "Select a quote to see the key techniques.";
+        document.getElementById("humanText").textContent = "Select a quote to see how it comments on resilience and/or empathy.";
+    }
+
+    updateWSuggestions();
+    updateMeaningOptions();
+}
+
+// update techniques + human-condition text when different quote chosen
+function updateQuoteInfo() {
+    const quoteId = document.getElementById("quoteSelect").value;
+    const list = quoteData[currentThemeKey] || [];
+    currentQuote = list.find(q => q.id === quoteId) || null;
+
+    if (currentQuote) {
+        document.getElementById("techniquesText").textContent = currentQuote.tech;
+        document.getElementById("humanText").textContent = currentQuote.human;
+    }
+
+    updateWSuggestions();
+    updateMeaningOptions();
+}
+
+// update 5W suggestions based on theme + selected W
+function updateWSuggestions() {
+    const w = document.getElementById("wStarter").value;
+    const sel = document.getElementById("wSuggestion");
+    sel.innerHTML = "";
+
+    if (!w) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No suggested clause selected";
+        sel.appendChild(opt);
+        return;
+    }
+
+    const themeMap = wSuggestions[currentThemeKey] || {};
+    const list = themeMap[w] || [];
+
+    if (list.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No suggested clause available for this 5W.";
+        sel.appendChild(opt);
+        return;
+    }
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Select a suggested clause…";
+    sel.appendChild(placeholder);
+
+    list.forEach(text => {
+        const opt = document.createElement("option");
+        opt.value = text;
+        opt.textContent = text;
+        sel.appendChild(opt);
+    });
+}
+
+// complexity label
+function updateComplexityLabel() {
+    const val = parseInt(document.getElementById("complexity").value, 10);
+    const label = document.getElementById("complexityLabel");
+    if (val === 1) {
+        label.textContent = "Level 1 – simple emotional / social meaning";
+    } else if (val === 2) {
+        label.textContent = "Level 2 – psychological, spiritual and individual/collective meaning";
+    } else {
+        label.textContent = "Level 3 – sophisticated cultural, political, paradox and universal human experience";
+    }
+}
+
+// populate outside-meaning options based on theme + complexity
+function updateMeaningOptions() {
+    const level = parseInt(document.getElementById("complexity").value, 10);
+    const sel = document.getElementById("outsideMeaning");
+    const options = meaningOptions[currentThemeKey] || [];
+    sel.innerHTML = "";
+
+    const filtered = options.filter(o => o.level <= level);
+    if (filtered.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No meaning options available for this level.";
+        sel.appendChild(opt);
+        return;
+    }
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Select a meaning connection…";
+    sel.appendChild(placeholder);
+
+    filtered.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.text;
+        opt.textContent = `Level ${o.level}: ${o.text}`;
+        sel.appendChild(opt);
+    });
+}
+
+// ----------------------------------------------------
+// Build final analytical sentence (avoids 'shows')
+// ----------------------------------------------------
+function buildSentence() {
+    const noun = document.getElementById("baseNoun").value;
+    const inside = document.getElementById("insideText").value.trim();
+    const outsideMeaning = document.getElementById("outsideMeaning").value;
+
+    if (!selectedAdjective) {
+        alert("Please select an adjective by clicking on one of the words.");
+        return;
+    }
+    if (!currentQuote) {
+        alert("Please choose a quote theme and quote.");
+        return;
+    }
+    if (!inside) {
+        alert("Please write or generate at least one inside-the-text idea.");
+        return;
+    }
+    if (!outsideMeaning) {
+        alert("Please choose a meaning connection for 'outside the text'.");
+        return;
+    }
+
+    const quoteText = currentQuote.text;
+
+    const insidePart = `, evident when ${inside}`;
+    const outsidePart = `, and ${outsideMeaning}`;
+
+    const sentence =
+      `Through constructing ${selectedAdjective} ${noun}${insidePart}, Parrett frames this moment in ${quoteText}${outsidePart}, inviting reflection on the complexities of human resilience and empathy in contemporary and universal contexts.`;
+
+    document.getElementById("sentence").innerText = sentence;
+    document.getElementById("output").style.display = "block";
+
+    // noun-pyramid style labels
+    document.getElementById("outBaseNoun").innerText = noun;
+    document.getElementById("outAdjective").innerText = selectedAdjective;
+    document.getElementById("outInside").innerText = inside;
+    document.getElementById("outOutside").innerText = outsideMeaning;
+
+    prepareBandPanel(noun, selectedAdjective, quoteText, inside, outsideMeaning, sentence);
+}
+
+// ----------------------------------------------------
+// Band comparison panel: auto-rephrase
+// ----------------------------------------------------
+function prepareBandPanel(noun, adj, quoteText, inside, outside, band4Sentence) {
+    currentBandSentences = {
+        2: `The quote ${quoteText} is about ${adj} ${noun} because ${inside}, and it suggests ${outside}.`,
+        3: `In ${quoteText}, Parrett presents ${adj} ${noun} when ${inside}, suggesting ${outside}.`,
+        4: band4Sentence,
+        6: `Through constructing ${adj} ${noun}, evident when ${inside}, Parrett frames this moment in ${quoteText} as part of a wider exploration of texts and human experiences, positioning responders to reflect on ${outside}.`
+    };
+
+    document.getElementById("bandPanel").style.display = "block";
+    setBandLevel(4);
+}
+
+function setBandLevel(level) {
+    const text = currentBandSentences[level];
+    if (!text) return;
+
+    document.getElementById("bandSentence").textContent = text;
+
+    // toggle button highlight
+    ["btnBand2","btnBand3","btnBand4","btnBand6"].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.remove("active");
+    });
+
+    let activeId = "btnBand4";
+    if (level === 2) activeId = "btnBand2";
+    else if (level === 3) activeId = "btnBand3";
+    else if (level === 6) activeId = "btnBand6";
+
+    const activeBtn = document.getElementById(activeId);
+    if (activeBtn) activeBtn.classList.add("active");
+}
+
+// ----------------------------------------------------
+// Initialisation
+// ----------------------------------------------------
+filterWords();
+populateQuoteSelect();
+updateComplexityLabel();
+updateMeaningOptions();
+</script>
+
+</body>
+</html>
